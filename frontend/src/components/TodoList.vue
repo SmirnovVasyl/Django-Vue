@@ -106,12 +106,12 @@ export default {
     },
     // front-end function
     nextOnClick: function (flag) {
-      var totalPage = Math.ceil(this.data.length / this.pageCount)
+      let tempData = this.getSearchValue()
+      let totalPage = Math.ceil(tempData.length / this.pageCount)
       if (totalPage < (this.pageNumber + flag)) return
       if (!(this.pageNumber + flag)) return
 
-      let tempData = this.getSearchValue()
-      totalPage = Math.ceil(tempData.length / this.pageCount)
+      this.pageNumber += flag
       if (totalPage <= this.pageNumber) this.pageNumber = totalPage
       let start = (this.pageNumber - 1) * this.pageCount
       let endCount = this.pageNumber * this.pageCount
@@ -121,11 +121,10 @@ export default {
       this.searchValue = e.target.value
       let tempData = this.getSearchValue()
       var totalPage = Math.ceil(tempData.length / this.pageCount)
-      if (totalPage <= this.pageNumber) {
-        this.pageNumber = totalPage
-      }
+      if (totalPage <= this.pageNumber) this.pageNumber = totalPage
+      if (!!totalPage && !this.pageNumber) this.pageNumber = 1
 
-      let start = this.pageNumber * this.pageCount
+      let start = (this.pageNumber - 1) * this.pageCount
       let endCount = this.pageNumber * this.pageCount
       this.showData = tempData.slice(start, endCount)
     },
