@@ -20,4 +20,5 @@ urlpatterns = [
     path('', views.insertPriceList, name='index'),
     path('getPrice/', views.getPriceList),
     path('delete/', views.deleteItem),
+    path('update/', views.updateItem),
 ]

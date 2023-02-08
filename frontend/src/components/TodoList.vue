@@ -1,5 +1,9 @@
 <template>
   <div class="pricing-wrapper">
+    <div class="header-container">
+      <h1>BTC_USD price Lists</h1>
+    </div>
+
     <div class="search-container">
       <input :value="searchValue" placeholder="please enter search value" @input="searchChange" />
     </div>
@@ -16,12 +20,13 @@
       </tr>
 
       <tr v-for="itemData in showData" v-bind:key="itemData.id">
-        <td>{{ itemData.Date }}</td>
-        <td>{{ itemData.Open }}</td>
-        <td>{{ itemData.Close }}</td>
-        <td>{{ itemData.High }}</td>
-        <td>{{ itemData.Low }}</td>
-        <td>{{ itemData.Volume }}</td>
+        <td> {{ itemData.Date }} </td>
+        <td> <input :value="itemData.Open" type="number" v-on:blur="itemUpdate(itemData.id, 'Open')" /> </td>
+        <td> <input :value="itemData.Close" type="number" v-on:blur="itemUpdate(itemData.id, 'Close')" /> </td>
+        <td> <input :value="itemData.High" type="number" v-on:blur="itemUpdate(itemData.id, 'High')" /> </td>
+        <td> <input :value="itemData.Low" type="number" v-on:blur="itemUpdate(itemData.id, 'Low')" /> </td>
+        <td> <input :value="itemData.Volume" type="number" v-on:blur="itemUpdate(itemData.id, 'Volume')" /> </td>
+
         <td>
           <svg fill="#000000" version="1.1" v-on:click="itemDelete(itemData.id)"
             xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 482.428 482.429" xml:space="preserve">
@@ -104,6 +109,23 @@ export default {
           this.showData = tempData.slice(start, endCount)
         })
     },
+    itemUpdate: function (id, key) {
+      let value = parseFloat(event.target.value)
+      axios.post('http://127.0.0.1:8000/update/', { id: id, key: key, value: value })
+        .then((response) => {
+          this.data = response.data
+          let tempData = this.getSearchValue()
+          var totalPage = Math.ceil(tempData.length / this.pageCount)
+          if (totalPage <= this.pageNumber) {
+            this.pageNumber = totalPage
+          }
+
+          let start = (this.pageNumber - 1) * this.pageCount
+          let endCount = this.pageNumber * this.pageCount
+          this.showData = tempData.slice(start, endCount)
+          console.log(response)
+        })
+    },
     // front-end function
     nextOnClick: function (flag) {
       let tempData = this.getSearchValue()
@@ -150,6 +172,13 @@ export default {
 </script>
 
 <style>
+.header-container h1 {
+  font-size: 40px;
+  font-weight: 900;
+  color: #080a2f;
+  text-shadow: 3px 4px 5px rgba(117, 129, 60, 0.849);
+}
+
 .pricing-wrapper {
   gap: 10px;
   width: 100vw;
@@ -177,6 +206,7 @@ input {
   border: unset;
   outline: unset;
   padding: 0px 10px;
+  background-color: unset;
 }
 
 .table-container {
@@ -203,6 +233,10 @@ input {
 .table-container th {
   border: 1px solid #ddd;
   padding: 8px;
+}
+
+tr td:first-child {
+  width: 200px;
 }
 
 .footer-container {

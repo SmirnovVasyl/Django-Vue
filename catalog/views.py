@@ -64,3 +64,21 @@ def deleteItem(request):
 
     priceLists = btc_price.objects.all().values()
     return Response(priceLists)
+
+@api_view(['POST'])
+@parser_classes([JSONParser])
+def updateItem(request):
+    id = request.data['id']
+    key = request.data['key']
+    value = request.data['value']
+    filterItem = btc_price.objects.filter(id=id)[0]
+
+    if(key == 'Open'): filterItem.Open = value
+    if(key == 'Close'): filterItem.Close = value
+    if(key == 'High'): filterItem.High = value
+    if(key == 'Low'): filterItem.Low = value
+    if(key == 'Volume'): filterItem.Volume = value
+
+    filterItem.save()
+    priceLists = btc_price.objects.all().values()
+    return Response(priceLists)
